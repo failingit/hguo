@@ -3,7 +3,11 @@ package it.failing.hammerfestuo;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,16 +15,24 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -80,7 +92,7 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated (Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
@@ -88,7 +100,7 @@ public class NavigationDrawerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         mDrawerListView = (ListView) inflater.inflate(
                 R.layout.fragment_navigation_drawer, container, false);
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -104,7 +116,7 @@ public class NavigationDrawerFragment extends Fragment {
                 new String[]{
                         getString(R.string.MenuNews),
                         getString(R.string.MenuLineUp),
-                        getString(R.string.MenuInformation),getString(R.string.MenuAbout)
+                        getString(R.string.MenuInformation), getString(R.string.MenuAbout)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
@@ -231,7 +243,6 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
@@ -240,7 +251,8 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (item.getItemId() == R.id.action_example) {
             Toast.makeText(getActivity(), "Example action. - Is this where I need to put the action ?", Toast.LENGTH_SHORT).show();
-            AsyncUpdater.DownloadMusicfromInternet().execute("http://failingit.com/news.xml");
+            File file = new File(Environment.getExternalStorageDirectory().getPath() + "/news.xml");
+            new DownloadMusicfromInternet();
             return true;
         }
 
@@ -271,4 +283,45 @@ public class NavigationDrawerFragment extends Fragment {
          */
         void onNavigationDrawerItemSelected(int position);
     }
+
+    class DownloadMusicfromInternet extends NavigationDrawerFragment {
+        // Download Music File from Internet
+        protected String doInBackground(String... f_url) {
+            int count;
+            try {
+                URL url = new URL("http://failingit.com/news.xml");
+                URLConnection conection = url.openConnection();
+                conection.connect();
+                // Get Music file length
+                int lenghtOfFile = conection.getContentLength();
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 10 * 1024);
+                // Output stream to write file in SD card
+                OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().getPath() + "hfuo/news.xml");
+                byte data[] = new byte[1024];
+                long total = 0;
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // Write data to file
+                    output.write(data, 0, count);
+                }
+                // Flush output
+                output.flush();
+                // Close streams
+                output.close();
+                input.close();
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+            return null;
+        }
+
+        // Once Music File is downloaded
+                protected void onPostExecute(String file_url) {
+            // Dismiss the dialog after the Music file was downloaded
+        }
+
+    }
 }
+
+
