@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">HammerFest UO</string>
+    <string name="MenuNews">News</string>
+    <string name="MenuLineUp">Line Up</string>
+    <string name="MenuInformation">Information</string>
+    <string name="MenuAbout">About</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="refreshData">Refresh</string>
+    <string name="action_settings">Refresh</string>
+
+</resources>
