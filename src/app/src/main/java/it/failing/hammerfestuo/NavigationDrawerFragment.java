@@ -240,7 +240,7 @@ public class NavigationDrawerFragment extends Fragment {
 
         if (item.getItemId() == R.id.action_example) {
             Toast.makeText(getActivity(), "Example action. - Is this where I need to put the action ?", Toast.LENGTH_SHORT).show();
-
+            AsyncUpdater.DownloadMusicfromInternet().execute("http://failingit.com/news.xml");
             return true;
         }
 

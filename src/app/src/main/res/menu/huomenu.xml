@@ -5,4 +5,5 @@
         android:title="@string/refreshData"
         android:icon="@drawable/ic_refresh"
         android:showAsAction="withText|ifRoom" />
+    <button android:id="@+id/btnProgressBar" />
  </menu>
